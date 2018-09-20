@@ -19,9 +19,14 @@ class MoviesController < ApplicationController
     end
     
     @sort = params[:sort]
-    @ratings = params[:ratings]
+#    @ratings = params[:ratings]
     
     @movies = Movie.all
+    
+    if @sort && Movie.attribute_names.include?(@sort)
+      @movies = @movies.order @sort
+    end
+    
   end
 
   def new
