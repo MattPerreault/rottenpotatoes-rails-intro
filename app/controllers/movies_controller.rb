@@ -12,12 +12,12 @@ class MoviesController < ApplicationController
 
   def index
     
-    if params[:sort].nil? && params[:ratings].nil? &&
-      (!session[:sort].nil? || !session[:ratings].nil?)
-      
-      # If the session is not empty, redirect to it, otherwise, load the default page
-      redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
-    end
+#    if params[:sort].nil? && params[:ratings].nil? &&
+#      (!session[:sort].nil? || !session[:ratings].nil?)
+#      
+#      # If the session is not empty, redirect to it, otherwise, load the default page
+#      redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
+#    end
     
     #Movie.ratings class method defined in models movie.rb
     @all_ratings = Movie.ratings
@@ -26,7 +26,7 @@ class MoviesController < ApplicationController
     @ratings = params[:ratings]  
 
     # if ratings is not blank returns the rating else returns an empty Array
-    @selected_ratings = (params[:ratings].present? ? params[:ratings] : [])
+    @selected_ratings = (params[:ratings].present? ? params[:ratings].keys : [])
     
     @movies = Movie.all
     
@@ -39,10 +39,12 @@ class MoviesController < ApplicationController
       #by default the ratings will be empty at first, so fill it with all ratings
       @selected_ratings = @all_ratings
     else
-      if @selected_ratings == Array
-        @movies = @movies.where :rating => @selected_ratings
-      end
+      @movies = @movies.where(rating: @selected_ratings).order(@sort)
     end
+    
+    
+    session[:sort] = @sort
+    session[:ratings] = @ratings
   end
 
   def new
