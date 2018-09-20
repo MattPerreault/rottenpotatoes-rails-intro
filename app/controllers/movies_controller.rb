@@ -19,12 +19,14 @@ class MoviesController < ApplicationController
       redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
     end
     
+    #Movie.ratings class method defined in models movie.rb
     @all_ratings = Movie.ratings
     
     @sort = params[:sort]
-#    @ratings = params[:ratings]
+    @ratings = params[:ratings]  
 
-
+    # if ratings is not blank returns the rating else returns an empty Array
+    @selected_ratings = (params[:ratings].present? ? params[:ratings] : [])
     
     @movies = Movie.all
     
@@ -33,6 +35,14 @@ class MoviesController < ApplicationController
       @movies = @movies.order(@sort)
     end
     
+    if @selected_ratings.empty?
+      #by default the ratings will be empty at first, so fill it with all ratings
+      @selected_ratings = @all_ratings
+    else
+      if @selected_ratings == Array
+        @movies = @movies.where :rating => @selected_ratings
+      end
+    end
   end
 
   def new
